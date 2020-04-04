@@ -57,7 +57,7 @@
 				</ul>
 				<div t-if="signature" t-raw="signature" style="font-size: 13px;"/>
 				<p style="color: #555555; margin-top:32px;">
-				    Az üzenetet az <a target="_blank" href="https://eyssen.hu/odoo" style="text-decoration:none; color: #875A7B;">eYssen IT Odoo</a> rendszerével küldték.
+				    Az üzenetet az <a target="_blank" href="https://www.eyssen.hu/" style="text-decoration:none; color: #875A7B;">eYssen IT Odoo</a> rendszerével küldték.
 				</p>
 				</div>
 				
