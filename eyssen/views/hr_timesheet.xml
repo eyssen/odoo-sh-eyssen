@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+
+
+
+
+
+		<!-- Account Analytic Line -->
+
+		<record id="timesheet_view_form" model="ir.ui.view">
+			<field name="name">account.analytic.line.form</field>
+			<field name="model">account.analytic.line</field>
+			<field name="inherit_id" ref="timesheet_grid.timesheet_view_form" />
+			<field name="arch" type="xml">
+
+				<field name="unit_amount" position="after">
+					<field name="name" />
+				</field>
+				
+			</field>
+		</record>
+
+
+
+
+
+	</data>
+</openerp>
