@@ -14,9 +14,10 @@
 			<field name="inherit_id" ref="timesheet_grid.timesheet_view_form" />
 			<field name="arch" type="xml">
 
-				<field name="unit_amount" position="after">
+				<xpath expr="//group[1]" position="inside">
+					<label for="name" />
 					<field name="name" />
-				</field>
+				</xpath>
 				
 			</field>
 		</record>
