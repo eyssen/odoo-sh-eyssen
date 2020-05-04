@@ -34,6 +34,7 @@
 				</t>
 			</xpath> -->
 			<xpath expr="//div/h4[hasclass('css_non_editable_mode_hidden')]" position="after" >
+				<!--
 				<t t-if="product.is_pack == True">
 					<button type="button" class="btn_modal_pack btn btn-info" data-toggle="modal" data-target="#open_products_modal">Pack Details</button>
 					<t t-set="remaning_amount"  t-value="product.get_discounted_pack_price(product.id)" />
@@ -42,6 +43,7 @@
 						<span t-esc="remaning_amount" style="white-space: nowrap;" t-options="{'widget': 'monetary','from_currency': product.currency_id, 'display_currency': website.currency_id}"/>
 					</div>
 				</t>
+				-->
 				<div id="open_products_modal" class="modal fade" role="dialog">
 					<div class="modal-dialog modal-lg">
 						<div class="modal-content">
