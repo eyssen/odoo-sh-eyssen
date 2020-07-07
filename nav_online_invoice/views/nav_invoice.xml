@@ -90,7 +90,7 @@
 								<t t-else="">
 									<lineNatureIndicator>OTHER</lineNatureIndicator>
 								</t>
-								<lineDescription t-esc="il.product_id.name"/>
+								<lineDescription t-esc="il.product_id.name[0:50]"/>
 								<quantity t-esc="il.quantity"/>
 								<unitOfMeasure t-esc="il.product_uom_id.nav_uom"/>
 								<unitPrice t-esc="il.price_unit"/>
