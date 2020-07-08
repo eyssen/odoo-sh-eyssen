@@ -14,6 +14,7 @@
                       <group>
                         <group>
                           <field name="nav_no" readonly="1"/>
+                          <field name="nav_no_reason" readonly="1"/>
                           <!-- <field name="nav_no" attrs="{'readonly': [ ('state', 'not in', ['draft'])]}"/> -->
                           <field name="nav_send_date" readonly="1"/>
                           <field name="nav_send_result" readonly="1"/>

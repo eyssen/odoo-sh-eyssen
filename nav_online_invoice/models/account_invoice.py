@@ -29,6 +29,7 @@ class AccountMove(models.Model):
 
 
     nav_no = fields.Boolean(u'Nem kell átadni a NAV-nak!', help=u'Pl. ha a számla másik programban lett kiállítva és már korábban átadásra került a NAV-nak, stb.', copy=False)
+    nav_no_reason = fields.Char(u'Az alábbiak miatt nem kellett átadni a NAV-nak: ', readonly=True, copy=False)
     nav_transaction_id = fields.Char(u'Nav tranzakciós azonosító', readonly=True, copy=False)
     nav_send_date = fields.Datetime(u'Nav beküldés ideje', readonly=True, copy=False)
     nav_send_result = fields.Char(u'Nav beküldés állapota', readonly=True, copy=False)
@@ -46,23 +47,33 @@ class AccountMove(models.Model):
     def nav_send(self):
         self.ensure_one()
         if self.state != 'posted':
-            _logger.error("Csak könyvelt számla küldhető be")
+            self.nav_no_reason = "Csak open vagy paid szamla kuldheto be"
+            _logger.error("===== NAV: Csak open vagy paid szamla kuldheto be")
             return
 
         if not self.company_id.partner_id or not self.company_id.partner_id.vat_hu:
-            _logger.error("A Partner adószáma kötelező")
+            self.nav_no_reason = "Partner adószáma kötelező"
+            _logger.error("===== NAV: Partner adószáma kötelező")
             return
 
         if self.type not in ['out_invoice','out_refund']:
-            _logger.error("Csak kimenő számlákat küldünk a nav-nak")
+            self.nav_no_reason = "Csak kimenő számlákat küldünk a nav-nak"
+            _logger.error("===== NAV: Csak kimenő számlákat küldünk a nav-nak")
             return
 
-#         if (self.amount_tax * self.currency_rate) < 100000:
-#             _logger.error("Csak 100.000.- Ft vagy feletti Áfa tartalmú számlát küldünk a NAV-nak")
-#             return
+        if self.partner_id.company_type == 'person':
+            self.nav_no_reason = "Magánszemélyt nem kell átadni"
+            _logger.info("===== NAV: Magánszemélyt nem kell átadni")
+            return
+        
+        if self.partner_id.company_type == 'company' and self.partner_id.country_id != self.company_id.partner_id.country_id:
+            self.nav_no_reason = "Csak magyar cégek felé kiállított számlát kell átadni"
+            _logger.info("===== NAV: Csak magyar cégek felé kiállított számlát kell átadni")
+            return
 
         if self.nav_no == True:
-            _logger.error("Manuálisan beállítva: Nem kell átadni a NAV-nak!")
+            self.nav_no_reason = "Manuálisan beállítva: Nem kell átadni a NAV-nak!"
+            _logger.error("===== NAV: Manuálisan beállítva: Nem kell átadni a NAV-nak!")
             return
         
         if not self.nav_check_result or self.nav_check_result == '' or self.nav_check_result == 'ABORTED':
