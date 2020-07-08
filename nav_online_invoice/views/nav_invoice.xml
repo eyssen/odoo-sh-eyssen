@@ -35,7 +35,7 @@
 										<city t-esc="invoice.company_id.partner_id.city"/>
 										<streetName t-esc="invoice.company_id.partner_id.street"/>
 										<publicPlaceCategory>.</publicPlaceCategory>
-										<number t-esc="invoice.company_id.partner_id.street2"/>
+										<number t-esc="invoice.company_id.partner_id.street2 or '.'"/>
 									</detailedAddress>
 								</supplierAddress>
 							</supplierInfo>
@@ -54,7 +54,7 @@
 										<city t-esc="invoice.partner_id.city"/>
 										<streetName t-esc="invoice.partner_id.street"/>
 										<publicPlaceCategory>.</publicPlaceCategory>
-										<number t-esc="invoice.partner_id.street2"/>
+										<number t-esc="invoice.partner_id.street2 or '.'"/>
 									</detailedAddress>
 								</customerAddress>
 							</customerInfo>
@@ -90,7 +90,7 @@
 								<t t-else="">
 									<lineNatureIndicator>OTHER</lineNatureIndicator>
 								</t>
-								<lineDescription t-esc="il.product_id.name[0:50]"/>
+								<lineDescription t-esc="il.name[0:50]"/>
 								<quantity t-esc="il.quantity"/>
 								<unitOfMeasure t-esc="il.product_uom_id.nav_uom"/>
 								<unitPrice t-esc="il.price_unit"/>
