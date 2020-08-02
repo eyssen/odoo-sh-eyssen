@@ -55,8 +55,6 @@ class AccountMove(models.Model):
                 raise UserError(_("Nincs beállítva fizetési feltétel!"))
             if not self.invoice_date:
                 raise UserError(_("Nincs megadva a számla kelte!"))
-            if self.invoice_date != fields.Date.today():
-                raise UserError(_("A számla kelte csak a mai nap lehet!"))
             if not self.fulfillment_date:
                 raise UserError(_("Nincs megadva a teljesítés időpontja!"))
             if not self.invoice_partner_bank_id:
