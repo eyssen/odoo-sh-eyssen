@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   inkscape:version="1.0 (4035a4f, 2020-05-01)"
+   sodipodi:docname="icon.svg"
+   xml:space="preserve"
+   enable-background="new 0 0 602 280"
+   viewBox="0 0 280 280"
+   height="280"
+   width="280"
+   y="0px"
+   x="0px"
+   id="barion_logo"
+   version="1.1"><metadata
+   id="metadata39"><rdf:RDF><cc:Work
+       rdf:about=""><dc:format>image/svg+xml</dc:format><dc:type
+         rdf:resource="http://purl.org/dc/dcmitype/StillImage" /></cc:Work></rdf:RDF></metadata><defs
+   id="defs37" /><sodipodi:namedview
+   inkscape:current-layer="barion"
+   inkscape:window-maximized="0"
+   inkscape:window-y="72"
+   inkscape:window-x="364"
+   inkscape:cy="140"
+   inkscape:cx="301"
+   inkscape:zoom="2.0199336"
+   showgrid="false"
+   id="namedview35"
+   inkscape:window-height="1074"
+   inkscape:window-width="1871"
+   inkscape:pageshadow="2"
+   inkscape:pageopacity="0"
+   guidetolerance="10"
+   gridtolerance="10"
+   objecttolerance="10"
+   borderopacity="1"
+   bordercolor="#666666"
+   pagecolor="#ffffff" />
+
+<g
+   id="barion">
+	<g
+   transform="matrix(0.49763976,0,0,1.1766931,-9.9527951,-25.111807)"
+   id="g12">
+		<rect
+   height="237.955"
+   width="562.65601"
+   fill="#1d95d3"
+   y="21.341"
+   x="20"
+   id="SVGID_1_" />
+	</g>
+	
+	<g
+   transform="matrix(2.2762708,0,0,2.2011773,-736.62266,-185.11913)"
+   id="barion_1_">
+		
+		
+		
+		
+		
+		
+		<path
+   d="m 386.38,202.203 c 29.102,-0.721 52.131,-25.704 51.436,-55.798 -0.243,-10.407 -3.289,-20.06 -8.371,-28.206 -10.118,-0.144 -20.297,2.895 -24.093,3.939 6.96,5.888 11.481,14.758 11.713,24.779 0.321,13.884 -7.679,25.965 -19.291,31.142 -1.238,-2.983 -1.701,-4.098 -2.915,-7.01 -11.357,6.882 -27.883,14.552 -46.828,15.39 9.823,10.059 23.432,16.13 38.349,15.764"
+   fill="#ffffff"
+   id="path50" />
+		<path
+   d="m 383.847,93.202 c -29.106,0.72 -52.13,25.701 -51.436,55.794 0.238,10.407 3.284,20.062 8.369,28.206 10.12,0.147 20.297,-2.895 24.085,-3.935 -6.951,-5.892 -11.477,-14.763 -11.704,-24.784 -0.323,-13.881 7.677,-25.96 19.289,-31.141 1.235,2.988 1.698,4.102 2.917,7.01 11.353,-6.882 27.878,-14.552 46.826,-15.391 -9.821,-10.05 -23.439,-16.128 -38.346,-15.759"
+   fill="#ffffff"
+   id="path54" />
+	</g>
+</g>
+</svg>

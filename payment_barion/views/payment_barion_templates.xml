@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        
+        <template id="barion_pixel_assets_frontend" name="Barion Pixel Assets Frontend" inherit_id="portal.frontend_layout">
+            <xpath expr="//head/script[last()]" position="after">
+                <t t-set="barion_pixel_enabled" t-value="request.env['payment.acquirer'].sudo().search([('provider', '=', 'barion')], limit=1).barion_pixel_enabled"/>
+                <t t-if="barion_pixel_enabled">
+                    <t t-set="barion_pixel_id" t-value="request.env['payment.acquirer'].sudo().search([('provider', '=', 'barion')], limit=1).barion_pixel_id"/>
+                    <script>
+                        // Create BP element on the window
+                        window["bp"] = window["bp"] || function () {
+                            (window["bp"].q = window["bp"].q || []).push(arguments);
+                        };
+                        window["bp"].l = 1 * new Date();
+                
+                        // Insert a script tag on the top of the head to load bp.js
+                        scriptElement = document.createElement("script");
+                        firstScript = document.getElementsByTagName("script")[0];
+                        scriptElement.async = true;
+                        scriptElement.src = 'https://pixel.barion.com/bp.js';
+                        firstScript.parentNode.insertBefore(scriptElement, firstScript);
+                
+                        // Send init event
+                        bp('init', 'addBarionPixelId', '<t t-esc="barion_pixel_id"/>');
+                    </script>
+                </t>
+            </xpath>
+        </template>
+    </data>
+</odoo>
