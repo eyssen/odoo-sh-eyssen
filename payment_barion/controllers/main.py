@@ -28,12 +28,12 @@ class BarionController(http.Controller):
         return "OK"
 
 
-    @http.route(['/payment/barion/prepare_transaction'], type='http', auth='public', csrf=False)
+    @http.route(['/payment/barion/prepare_transaction'], type='http', auth='public', csrf=False, website=True)
     def payment_barion_prepare_transaction(self, **post):
-
-        baseurl = http.request.env['ir.config_parameter'].get_param('web.base.url')
-        transaction = request.env['payment.transaction'].search([('reference', '=', post.get('reference'))], limit=1)
-
+        
+        #baseurl = http.request.env['ir.config_parameter'].sudo().get_param('web.base.url')
+        baseurl = "https://" + request.website.domain
+        transaction = request.env['payment.transaction'].sudo().search([('reference', '=', post.get('reference'))], limit=1)
         barion_items = []
         for order in transaction.sale_order_ids:
             #order.action_done()
