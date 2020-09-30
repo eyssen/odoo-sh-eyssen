@@ -14,7 +14,7 @@ import requests
 import io
 from base64 import b64decode
 from base64 import b64encode
-from Crypto.Cipher import AES
+from Cryptodome.Cipher import AES
 import binascii
 
 _logger = logging.getLogger(__name__)
