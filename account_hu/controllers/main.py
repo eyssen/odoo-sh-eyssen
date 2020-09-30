@@ -85,8 +85,8 @@ class Binary(http.Controller):
                                    """, (company,))
                     else:
                         cr.execute("""SELECT c.logo_invoice, c.write_date
-                                        FROM res_users u
-                                   LEFT JOIN res_company c
+                                        FROM res_users AS u
+                                   LEFT JOIN res_company AS c
                                           ON c.id = u.company_id
                                        WHERE u.id = %s
                                    """, (uid,))

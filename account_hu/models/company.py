@@ -15,4 +15,4 @@ class Company(models.Model):
     _inherit = "res.company"
 
 
-    logo_invoice = fields.Binary(u'Számla logó')
+    logo_invoice = fields.Binary(u'Számla logó', attachment=False)

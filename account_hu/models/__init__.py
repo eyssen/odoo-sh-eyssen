@@ -4,4 +4,4 @@ from . import account_move
 from . import partner
 from . import product
 #from . import stock
-#from . import merge_bank_statement
+from . import merge_bank_statement

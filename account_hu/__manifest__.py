@@ -19,7 +19,7 @@
         'views/product.xml',
         'views/account.xml',
         #'views/stock.xml',
-        #'views/merge_bank_statement.xml',
+        'views/merge_bank_statement.xml',
         'report/report.xml',
         'report/report_invoice.xml',
         #'report/report_delivery_note.xml',

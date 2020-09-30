@@ -10,7 +10,7 @@
 
 
                 <xpath expr="//notebook" position="inside">
-                  <page string="NAV" name="nav_info">
+                  <page string="NAV" name="nav_info" attrs="{'invisible': [ ('type', 'not in', ['out_invoice', 'out_refund'])]}">
                       <group>
                         <group>
                           <field name="nav_no" readonly="1"/>

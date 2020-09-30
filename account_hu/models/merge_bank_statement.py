@@ -31,13 +31,12 @@ class MergeBankStatement(models.TransientModel):
         return result
 
 
-    @api.multi
     def action_merge(self):
         self.ensure_one()
 
         if len(self.statement_ids) > 1:
             stmt_id = None
-            for stmt in self.statement_ids.sorted(key=lambda s: s.id):
+            for stmt in self.statement_ids:
                 if not stmt_id:
                     stmt.name = self.name
                     stmt_id = stmt.id

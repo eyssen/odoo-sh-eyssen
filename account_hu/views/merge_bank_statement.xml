@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version='1.0' encoding='utf-8'?>
 <odoo>
 
 
@@ -28,7 +28,6 @@
         <record id="merge_bank_statement_act" model="ir.actions.act_window">
             <field name="name">Merge Bank Statements</field>
             <field name="res_model">account.merge.bank.statement</field>
-            <field name="view_type">form</field>
             <field name="view_mode">form</field>
             <field name="view_id" ref="merge_bank_statement_form"/>
             <field name="target">new</field>
@@ -38,13 +37,11 @@
         <act_window
             id="action_merge_bank_statement"
             name="Merge"
-            multi="True"
-            key2="client_action_multi"
             res_model="account.merge.bank.statement"
-            src_model="account.bank.statement"
+            binding_model="account.bank.statement"
+            binding_views="list"
             view_mode="form"
             target="new"
-            view_type="form"
             groups="account.group_account_manager" />
 
 

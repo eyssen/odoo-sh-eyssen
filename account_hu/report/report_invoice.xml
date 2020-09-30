@@ -39,7 +39,8 @@
 
 					<!-- Title -->
 					<div class="invoice-logo">
-						<img src="/logo.png" height="50"/>
+						<t t-set="img_url" t-value="'/logo_invoice.png?company=' + str(o.company_id.id)" />
+						<img t-att-src="img_url" height="50"/>
 					</div>
 
 					<!-- Title -->
