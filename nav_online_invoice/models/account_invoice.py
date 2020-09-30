@@ -250,7 +250,7 @@ class AccountMove(models.Model):
         unpad = lambda s: s[:-ord(s[len(s) - 1:])]
 
         enc = b64decode(token)
-        cipher = AES.new(exchangeKey, AES.MODE_ECB)
+        cipher = AES.new(exchangeKey.encode("utf-8"), AES.MODE_ECB)
         return unpad(cipher.decrypt(enc)).decode('utf8')
 
 
