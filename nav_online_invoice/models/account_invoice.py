@@ -61,15 +61,15 @@ class AccountMove(models.Model):
             _logger.error("===== NAV: Csak kimenő számlákat küldünk a nav-nak")
             return
 
-        if self.partner_id.company_type == 'person':
-            self.nav_no_reason = "Magánszemélyt nem kell átadni"
-            _logger.info("===== NAV: Magánszemélyt nem kell átadni")
-            return
+        #if self.partner_id.company_type == 'person':
+        #    self.nav_no_reason = "Magánszemélyt nem kell átadni"
+        #    _logger.info("===== NAV: Magánszemélyt nem kell átadni")
+        #    return
         
-        if self.partner_id.company_type == 'company' and self.partner_id.country_id != self.company_id.partner_id.country_id:
-            self.nav_no_reason = "Csak magyar cégek felé kiállított számlát kell átadni"
-            _logger.info("===== NAV: Csak magyar cégek felé kiállított számlát kell átadni")
-            return
+        #if self.partner_id.company_type == 'company' and self.partner_id.country_id != self.company_id.partner_id.country_id:
+        #    self.nav_no_reason = "Csak magyar cégek felé kiállított számlát kell átadni"
+        #    _logger.info("===== NAV: Csak magyar cégek felé kiállított számlát kell átadni")
+        #    return
 
         if self.nav_no == True:
             self.nav_no_reason = "Manuálisan beállítva: Nem kell átadni a NAV-nak!"
