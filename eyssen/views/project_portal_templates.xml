@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    
+    
+    
+    
+    <template id="portal_my_tasks" inherit_id="project.portal_my_tasks">
+        
+        <xpath expr="//thead/tr" position="inside">
+            <th class="text-center">Határidő</th>
+        </xpath>
+
+        <xpath expr="//tbody/t[1]/tr" position="inside">
+            <td class="text-center">
+                <span t-field="task.date_deadline" />
+            </td>
+        </xpath>
+        
+    </template>
+    
+    
+    
+    
+    
+</odoo>
