@@ -42,6 +42,7 @@
     'data': [
         'views/hr_timesheet.xml',
         'views/mail_data.xml',
+        'views/project_portal_templates.xml',
     ],
     
     'application': True,
