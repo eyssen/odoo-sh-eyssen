@@ -173,6 +173,8 @@ class AccountMove(models.Model):
             # generate a tax line.
             zero_taxes = set()
             tax_group_id = None
+            percent = None
+            description = None
             for line in move.line_ids:
                 for tax in line.tax_ids.flatten_taxes_hierarchy():
                     if tax.tax_group_id not in res or tax.id in zero_taxes:
@@ -181,9 +183,12 @@ class AccountMove(models.Model):
                         zero_taxes.add(tax.id)
                     if not tax_group_id:
                         tax_group_id = tax.tax_group_id
-                if tax_group_id != None:
-                    res[tax_group_id]['percent'] = line.tax_line_id.amount
-                    res[tax_group_id]['description'] = line.tax_line_id.description
+                if line.tax_line_id.description:
+                    percent = line.tax_line_id.amount
+                    description = line.tax_line_id.description
+            if tax_group_id != None:
+                res[tax_group_id]['percent'] = percent
+                res[tax_group_id]['description'] = description
 
             res = sorted(res.items(), key=lambda l: l[0].sequence)
             move.amount_by_group = [(
