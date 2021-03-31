@@ -7,9 +7,10 @@
             <t t-if="invoice.type=='out_refund'">
               <t t-set="refund_invoice" t-value="docs[1]"/>
             </t>
-			<InvoiceData xmlns="http://schemas.nav.gov.hu/OSA/2.0/data" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://schemas.nav.gov.hu/OSA/2.0/data invoiceData.xsd">
+			<InvoiceData xmlns="http://schemas.nav.gov.hu/OSA/3.0/data" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://schemas.nav.gov.hu/OSA/3.0/data invoiceData.xsd" xmlns:base="http://schemas.nav.gov.hu/OSA/3.0/base">
 				<invoiceNumber t-esc="invoice.name"/>
 				<invoiceIssueDate t-esc="invoice.invoice_date"/>
+                <completenessIndicator>false</completenessIndicator>
 				<invoiceMain>
 					<invoice>
 						<t t-if="invoice.type=='out_refund'">
@@ -23,40 +24,78 @@
 							<supplierInfo>
 								<supplierTaxNumber>
 									<t t-set="vat_hu" t-value="invoice.company_id.partner_id.vat_hu.split('-')"/>
-									<taxpayerId t-esc="vat_hu[0]"/>
-									<vatCode t-esc="vat_hu[1]"/>
-									<countyCode t-esc="vat_hu[2]"/>
+									<base:taxpayerId t-esc="vat_hu[0]"/>
+									<base:vatCode t-esc="vat_hu[1]"/>
+									<base:countyCode t-esc="vat_hu[2]"/>
 								</supplierTaxNumber>
 								<supplierName t-esc="invoice.company_id.name"/>
 								<supplierAddress>
-									<detailedAddress>
-										<countryCode t-esc="invoice.company_id.partner_id.country_id.code"/>
-										<postalCode t-esc="invoice.company_id.partner_id.zip"/>
-										<city t-esc="invoice.company_id.partner_id.city"/>
-										<streetName t-esc="invoice.company_id.partner_id.street"/>
-										<publicPlaceCategory>.</publicPlaceCategory>
-										<number t-esc="invoice.company_id.partner_id.street2 or '.'"/>
-									</detailedAddress>
+									<base:detailedAddress>
+										<base:countryCode t-esc="invoice.company_id.partner_id.country_id.code"/>
+										<base:postalCode t-esc="invoice.company_id.partner_id.zip"/>
+										<base:city t-esc="invoice.company_id.partner_id.city"/>
+										<base:streetName t-esc="invoice.company_id.partner_id.street"/>
+										<base:publicPlaceCategory>.</base:publicPlaceCategory>
+										<base:number t-esc="invoice.company_id.partner_id.street2 or '.'"/>
+									</base:detailedAddress>
 								</supplierAddress>
 							</supplierInfo>
 							<customerInfo>
-								<customerTaxNumber>
-									<t t-set="customer_vat_hu" t-value="invoice.partner_id.vat_hu.split('-')"/>
-									<taxpayerId t-esc="customer_vat_hu[0]"/>
-									<vatCode t-esc="customer_vat_hu[1]"/>
-									<countyCode t-esc="customer_vat_hu[2]"/>
-								</customerTaxNumber>
-								<customerName t-esc="invoice.partner_id.display_name"/>
-								<customerAddress>
-									<detailedAddress>
-										<countryCode t-esc="invoice.partner_id.country_id.code"/>
-										<postalCode t-esc="invoice.partner_id.zip"/>
-										<city t-esc="invoice.partner_id.city"/>
-										<streetName t-esc="invoice.partner_id.street"/>
-										<publicPlaceCategory>.</publicPlaceCategory>
-										<number t-esc="invoice.partner_id.street2 or '.'"/>
-									</detailedAddress>
-								</customerAddress>
+                                <!-- 
+DOMESTIC: Belföldi ÁFA alany. Ilyenkor a vevő nevének és címének (customerName, customerAddress) megadása kötelező. Adószámok közül csak a magyar adószám (customerVatData/customerTaxNumber) adható meg. Ez a megadás minden esetben kötelező, kivéve egy esetet, amikor az értékesítő(eladó) csak áfa regisztrált és nem belföldi fordított adózású az ügylet.
+OTHER: Egyéb (belföldi nem ÁFA alany, nem természetes személy, külföldi ÁFA alany és külföldi nem ÁFA alany, nem természetes személy). Ilyenkor a vevő nevének és címének (customerName, customerAddress) megadása kötelező. Adószámok közül (customerVatData) a háromból egy megadható, de nem kötelező.
+PRIVATE_PERSON: Nem ÁFA alany (belföldi vagy külföldi) természetes személy. Ilyenkor a vevői adatok közül a customerVatData, customerName, customerAddress megadása tilos, ezt blokkoló validáció ellenőrzi.
+                                -->
+                                <!-- Vevő ÁFA szerinti státusza (DOMESTIC|OTHER|PRIVATE_PERSON) -->
+                                <t t-if="invoice.partner_id.country_id.code != 'HU'">
+                                    <customerVatStatus>OTHER</customerVatStatus>
+                                    <customerVatData>
+                                        <t t-if="invoice.partner_id.vat">
+                                            <communityVatNumber t-esc="invoice.partner_id.vat" />
+                                        </t>
+                                        <t t-else="">
+                                            <thirdStateTaxId>Ismeretlen</thirdStateTaxId>
+                                        </t>
+                                    </customerVatData>
+                                    <customerName t-esc="invoice.partner_id.display_name"/>
+                                    <customerAddress>
+                                        <base:detailedAddress>
+                                            <base:countryCode t-esc="invoice.partner_id.country_id.code"/>
+                                            <base:postalCode t-esc="invoice.partner_id.zip"/>
+                                            <base:city t-esc="invoice.partner_id.city"/>
+                                            <base:streetName t-esc="invoice.partner_id.street"/>
+                                            <base:publicPlaceCategory>.</base:publicPlaceCategory>
+                                            <base:number t-esc="invoice.partner_id.street2 or '.'"/>
+                                        </base:detailedAddress>
+                                    </customerAddress>
+                                </t>
+                                <t t-else="">
+                                    <t t-if="invoice.partner_id.company_type != 'person'">
+                                        <customerVatStatus>DOMESTIC</customerVatStatus>
+                                        <customerVatData>
+                                            <customerTaxNumber>
+                                                <t t-set="customer_vat_hu" t-value="invoice.partner_id.vat_hu.split('-')"/>
+                                                <base:taxpayerId t-esc="customer_vat_hu[0]"/>
+                                                <base:vatCode t-esc="customer_vat_hu[1]"/>
+                                                <base:countyCode t-esc="customer_vat_hu[2]"/>
+                                            </customerTaxNumber>
+                                        </customerVatData>
+                                        <customerName t-esc="invoice.partner_id.display_name"/>
+                                        <customerAddress>
+                                            <base:detailedAddress>
+                                                <base:countryCode t-esc="invoice.partner_id.country_id.code"/>
+                                                <base:postalCode t-esc="invoice.partner_id.zip"/>
+                                                <base:city t-esc="invoice.partner_id.city"/>
+                                                <base:streetName t-esc="invoice.partner_id.street"/>
+                                                <base:publicPlaceCategory>.</base:publicPlaceCategory>
+                                                <base:number t-esc="invoice.partner_id.street2 or '.'"/>
+                                            </base:detailedAddress>
+                                        </customerAddress>
+                                    </t>
+                                    <t t-else="">
+                                        <customerVatStatus>PRIVATE_PERSON</customerVatStatus>
+                                    </t>
+                                </t>
 							</customerInfo>
 							<invoiceDetail>
 								<invoiceCategory>NORMAL</invoiceCategory>
@@ -68,9 +107,12 @@
 							</invoiceDetail>
 						</invoiceHead>
 						<invoiceLines>
+                            <!-- fogalmam sincs hogy ez a mergedItemIndicator mitől függ --> 
+                            <mergedItemIndicator>false</mergedItemIndicator>
 							<t t-set="linenumber" t-value="0"/>
 							<t t-set="lineNumberreference" t-value="len(invoice.invoice_line_ids)"/>
 							<line t-foreach="invoice.invoice_line_ids" t-as="il" t-if="il.display_type == False">
+                                
 								<t t-set="linenumber" t-value="linenumber+1"/>
 								<t t-set="lineNumberreference" t-value="lineNumberreference+1"/>
 								<lineNumber t-esc="linenumber"/>
@@ -101,7 +143,12 @@
 									</lineNetAmountData>
 									<lineVatRate>
 										<t t-foreach="il.tax_ids" t-as="line_tax">
-											<vatPercentage t-esc="line_tax.amount / 100.0"/>
+                                            <t t-if="line_tax.amount == 0">
+                                                <noVatCharge>true</noVatCharge>
+                                            </t>
+                                            <t t-else="">
+                                                <vatPercentage t-esc="line_tax.amount / 100.0"/>
+                                            </t>
 										</t>
 									</lineVatRate>
 									<lineVatData>
@@ -119,7 +166,12 @@
 							<summaryNormal>
 								<summaryByVatRate t-foreach="invoice.amount_by_group" t-as="tl">
 									<vatRate>
-										<vatPercentage t-esc="'{:.2f}'.format(tl[9]/100.0)"/>
+                                        <t t-if="tl[9] == 0">
+                                            <noVatCharge>true</noVatCharge>
+                                        </t>
+                                        <t t-else="">
+                                            <vatPercentage t-esc="'{:.2f}'.format(tl[9]/100.0)"/>
+                                        </t>
 									</vatRate>
 									<vatRateNetData>
 										<vatRateNetAmount t-esc="'{:.2f}'.format(tl[2])"/>
