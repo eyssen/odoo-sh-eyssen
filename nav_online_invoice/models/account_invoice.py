@@ -61,15 +61,15 @@ class AccountMove(models.Model):
             _logger.error("===== NAV: Csak kimenő számlákat küldünk a nav-nak")
             return
 
-        if self.partner_id.company_type == 'person':
-            self.nav_no_reason = "Magánszemélyt nem kell átadni"
-            _logger.info("===== NAV: Magánszemélyt nem kell átadni")
-            return
+#         if self.partner_id.company_type == 'person':
+#             self.nav_no_reason = "Magánszemélyt nem kell átadni"
+#             _logger.info("===== NAV: Magánszemélyt nem kell átadni")
+#             return
         
-        if self.partner_id.company_type == 'company' and self.partner_id.country_id != self.company_id.partner_id.country_id:
-            self.nav_no_reason = "Csak magyar cégek felé kiállított számlát kell átadni"
-            _logger.info("===== NAV: Csak magyar cégek felé kiállított számlát kell átadni")
-            return
+#        if self.partner_id.company_type == 'company' and self.partner_id.country_id != self.company_id.partner_id.country_id:
+#            self.nav_no_reason = "Csak magyar cégek felé kiállított számlát kell átadni"
+#            _logger.info("===== NAV: Csak magyar cégek felé kiállított számlát kell átadni")
+#            return
 
         if self.nav_no == True:
             self.nav_no_reason = "Manuálisan beállítva: Nem kell átadni a NAV-nak!"
@@ -125,7 +125,6 @@ class AccountMove(models.Model):
         response = self.makeRequest(nav_api_url + "/queryTransactionStatus", xml)
         if response.status_code == requests.codes.ok:
             root = self.parseXml(response.text)
-
             funcCode = root.find(".//funcCode")
             if funcCode.text.upper() == "OK":
                 invoiceStatus  = root.find('.//invoiceStatus')
@@ -170,8 +169,9 @@ class AccountMove(models.Model):
 
         if response.status_code == requests.codes.ok:
             root = self.parseXml(response.text)
-            invoice = root.find('.//invoiceData')
-            self.nav_xml = b64decode(invoice.text)
+            invoice = root.find(".//invoiceData")
+            if invoice is not None:
+                self.nav_xml = b64decode(invoice.text)
         else:
             ret = self.response(response)
 
@@ -195,20 +195,20 @@ class AccountMove(models.Model):
         etree.SubElement(invoiceOperation, "index").text = "1"
         etree.SubElement(invoiceOperation, "invoiceOperation").text = operation
         etree.SubElement(invoiceOperation, "invoiceData").text = base64_invoice
-
+        
         xml = self.getXmlString(request)
 
-#         _logger.info("******************")
-#         _logger.info(invoice_xml)
-#         _logger.info("******************")
+        _logger.info("******************")
+        _logger.info(invoice_xml)
+        _logger.info("******************")
 
         response = self.makeRequest(nav_api_url + "/manageInvoice", xml)
         if response.status_code == requests.codes.ok:
             root = self.parseXml(response.text)
-
+            
             funcCode = root.find(".//funcCode")
             if funcCode.text.upper() == "OK":
-                transactionId  = root.find('.//transactionId')
+                transactionId  = root.find(".//transactionId")
                 ret = ("Ok", transactionId.text)
             else:
                 errorCode = root.find(".//errorCode")
@@ -275,22 +275,24 @@ class AccountMove(models.Model):
 
     def baseXml(self, rootTag, base64_invoice = None):
         signKey = self.company_id.nav_sign_key
-
-        root = etree.Element(rootTag, xmlns='http://schemas.nav.gov.hu/OSA/2.0/api')
+        
+        common = "http://schemas.nav.gov.hu/NTCA/1.0/common"
+        
+        root = etree.Element(rootTag, {"xmlns":"http://schemas.nav.gov.hu/OSA/3.0/api"}, nsmap = {"common" : common})
         requestId = self.generateRequestId()
         timestamp = self.generateTimestamp()
 
-        header = etree.SubElement(root, "header")
-        etree.SubElement(header, "requestId" ).text = requestId
-        etree.SubElement(header, "timestamp" ).text = timestamp
-        etree.SubElement(header, "requestVersion").text = "2.0"
-        etree.SubElement(header, "headerVersion").text = "1.0"
+        header = etree.SubElement(root, "{%s}header"%common)
+        etree.SubElement(header, "{%s}requestId"%common).text = requestId
+        etree.SubElement(header, "{%s}timestamp"%common).text = timestamp
+        etree.SubElement(header, "{%s}requestVersion"%common).text = "3.0"
+        etree.SubElement(header, "{%s}headerVersion"%common).text = "1.0"
 
-        user = etree.SubElement(root, "user")
-        etree.SubElement(user, "login").text = self.company_id.nav_user
-        etree.SubElement(user, "passwordHash").text = self.sha512(self.company_id.nav_pass)
-        etree.SubElement(user, "taxNumber").text = str(self.company_id.partner_id.vat_hu.split('-')[0])
-        etree.SubElement(user, "requestSignature").text = self.generateSignatureHash(requestId, timestamp, signKey, rootTag, base64_invoice)
+        user = etree.SubElement(root, "{%s}user"%common)
+        etree.SubElement(user, "{%s}login"%common).text = self.company_id.nav_user
+        etree.SubElement(user, "{%s}passwordHash"%common, {"cryptoType":"SHA-512"}).text = self.sha512(self.company_id.nav_pass)
+        etree.SubElement(user, "{%s}taxNumber"%common).text = str(self.company_id.partner_id.vat_hu.split('-')[0])
+        etree.SubElement(user, "{%s}requestSignature"%common, {"cryptoType":"SHA3-512"}).text = self.generateSignatureHash(requestId, timestamp, signKey, rootTag, base64_invoice)
 
         software = etree.SubElement(root, "software")
         etree.SubElement(software, "softwareId").text = "EYSSENODOO13-00001"
@@ -339,7 +341,9 @@ class AccountMove(models.Model):
 
 
     def parseXml(self, xml):
-        xml = re.sub(r"""\s(xmlns="[^"]+"|xmlns='[^']+')""", '', xml, count=1)
+        xml = re.sub(r"""\s(xmlns="[^"]+"|xmlns='[^']+'|xmlns:[^=]+="[^"]+"|xmlns:[^=]+="[^']+')""", '', xml)
+        xml = re.sub(r"""(<[^: >]+:)""", '<', xml)
+        xml = re.sub(r"""(<\/[^: ]+?=:>)""", '</', xml)
         xml = xml.encode('utf-8')
         parser = etree.XMLParser(ns_clean=True, recover=True, encoding='utf-8')
         tree = etree.parse(io.BytesIO(xml), parser=parser)
