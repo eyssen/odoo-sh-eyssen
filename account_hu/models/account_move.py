@@ -22,7 +22,7 @@ class AccountMove(models.Model):
 
 
     fulfillment_date = fields.Date(u'Teljesítés időpontja', readonly=True, states={'draft':[('readonly',False)]})
-    currency_rate = fields.Float('Rate', readonly=True)
+    currency_rate = fields.Float('Rate', copy=False, required=True, default=1, readonly=True)
     intermediary_services = fields.Boolean(u'A számla közvetített szolgáltatást tartalmaz')
 
 
@@ -62,22 +62,22 @@ class AccountMove(models.Model):
             if not self.invoice_partner_bank_id:
                 raise UserError(_("Nincs megadva bankszámla!"))
 
-        if not self.currency_rate:
+        if self.currency_rate == 1:
             #TODO: a kerekítést a valuta alapján kéne csinálni
             #TODO: 60 napnál régebbi teljesítésű számlákat még le kell kezelni
             if self.fiscal_position_id:
                 # Árfolyam: számla kelte alapján (meg van adva költségvetési pozíció)
                 currency_id = self.currency_id.with_context(date=self.invoice_date)
-                self.currency_rate = round(currency_id._convert(1, self.company_id.currency_id, self.company_id, self.invoice_date), 2)
+                self.currency_rate = currency_id._convert(1, self.company_id.currency_id, self.company_id, self.invoice_date, round=False)
             else:
                 if self.fulfillment_date > self.invoice_date:
                     # Árfolyam: számla kelte alapján (jövőbeni teljesítés)
                     currency_id = self.currency_id.with_context(date=self.invoice_date)
-                    self.currency_rate = round(currency_id._convert(1, self.company_id.currency_id, self.company_id, self.invoice_date), 2)
+                    self.currency_rate = currency_id._convert(1, self.company_id.currency_id, self.company_id, self.invoice_date, round=False)
                 else:
                     # Árfolyam: teljesítés időpontja alapján (normál számla)
                     currency_id = self.currency_id.with_context(date=self.fulfillment_date)
-                    self.currency_rate = round(currency_id._convert(1, self.company_id.currency_id, self.company_id, self.fulfillment_date), 2)
+                    self.currency_rate = currency_id._convert(1, self.company_id.currency_id, self.company_id, self.fulfillment_date, round=False)
 
         return self.post()
 
@@ -157,8 +157,10 @@ class AccountMove(models.Model):
             # There are as many tax line as there are repartition lines
             done_taxes = set()
             for line in tax_lines:
-                res.setdefault(line.tax_line_id.tax_group_id, {'base': 0.0, 'amount': 0.0})
+                res.setdefault(line.tax_line_id.tax_group_id, {'base': 0.0, 'amount': 0.0, 'percent': 0.0, 'description': ''})
                 res[line.tax_line_id.tax_group_id]['amount'] += tax_balance_multiplicator * (line.amount_currency if line.currency_id else line.balance)
+                res[line.tax_line_id.tax_group_id]['percent'] = line.tax_line_id.amount
+                res[line.tax_line_id.tax_group_id]['description'] = line.tax_line_id.description
                 tax_key_add_base = tuple(move._get_tax_key_for_group_add_base(line))
                 if tax_key_add_base not in done_taxes:
                     if line.currency_id and line.company_currency_id and line.currency_id != line.company_currency_id:
@@ -172,23 +174,12 @@ class AccountMove(models.Model):
             # At this point we only want to keep the taxes with a zero amount since they do not
             # generate a tax line.
             zero_taxes = set()
-            tax_group_id = None
-            percent = 0
-            description = ''
             for line in move.line_ids:
                 for tax in line.tax_ids.flatten_taxes_hierarchy():
                     if tax.tax_group_id not in res or tax.id in zero_taxes:
-                        res.setdefault(tax.tax_group_id, {'base': 0.0, 'amount': 0.0})
+                        res.setdefault(tax.tax_group_id, {'base': 0.0, 'amount': 0.0, 'percent': 0.0, 'description': ''})
                         res[tax.tax_group_id]['base'] += tax_balance_multiplicator * (line.amount_currency if line.currency_id else line.balance)
                         zero_taxes.add(tax.id)
-                    if not tax_group_id:
-                        tax_group_id = tax.tax_group_id
-                if line.tax_line_id.description:
-                    percent = line.tax_line_id.amount
-                    description = line.tax_line_id.description
-            if tax_group_id != None:
-                res[tax_group_id]['percent'] = percent
-                res[tax_group_id]['description'] = description
 
             res = sorted(res.items(), key=lambda l: l[0].sequence)
             move.amount_by_group = [(
@@ -198,10 +189,12 @@ class AccountMove(models.Model):
                 formatLang(lang_env, amounts['base'], currency_obj=move.currency_id),
                 len(res),
                 group.id,
-                formatLang(lang_env, amounts['amount']+amounts['base'], currency_obj=move.currency_id),
+                formatLang(lang_env, amounts['amount']+amounts['base'], currency_obj=move.currency_id), # 7 1.270,00 €
                 amounts['description'],
                 amounts['percent']
             ) for group, amounts in res]
+
+            
 
 
 

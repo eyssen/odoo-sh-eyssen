@@ -265,34 +265,18 @@
 									</thead>
 									<tbody class="invoice-vatbox-tbody">
 										<tr t-foreach="o.amount_by_group" t-as="amount_by_group">
-											<t t-if="len(o.line_ids.filtered(lambda line: line.tax_line_id)) == 1 and o.amount_untaxed == amount_by_group[2]">
-												<td style="border-left-width: 1px; border-left-style: solid;">
-													<p t-esc="amount_by_group[4]" />
-												</td>
-												<td>
-													<p t-esc="amount_by_group[8]" />
-												</td>
-												<td>
-													<p t-esc="amount_by_group[3]" />
-												</td>
-												<td style="border-right-width: 1px; border-right-style: solid; padding-right: 2px;">
-													<p t-esc="amount_by_group[7]" />
-												</td>
-											</t>
-                                            <t t-else="">
-												<td style="border-left-width: 1px; border-left-style: solid;">
-													<p t-esc="(amount_by_group[2] / o.currency_rate)" t-options='{"widget": "monetary", "display_currency": o.currency_id}' />
-												</td>
-												<td>
-													<p t-esc="amount_by_group[8]" />
-												</td>
-												<td>
-													<p t-esc="amount_by_group[3]" />
-												</td>
-												<td style="border-right-width: 1px; border-right-style: solid; padding-right: 2px;">
-													<p t-esc="(amount_by_group[2] / o.currency_rate + amount_by_group[1])" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
-												</td>
-                                            </t>
+                                            <td style="border-left-width: 1px; border-left-style: solid;">
+												<p t-esc="amount_by_group[4]" />
+											</td>
+											<td>
+												<p t-esc="amount_by_group[8]" />
+											</td>
+											<td>
+												<p t-esc="amount_by_group[3]" />
+											</td>
+											<td style="border-right-width: 1px; border-right-style: solid; padding-right: 2px;">
+												<p t-esc="amount_by_group[7]" />
+											</td>
 										</tr>
 										<tr style="background-color: #CCCCCC; vertical-align: top; border-top-width: 1px; border-top-style: solid; border-bottom-width: 1px; border-bottom-style: solid; border-left-width: 1px; border-left-style: solid; border-right-width: 1px; border-right-style: solid;">
 											<td colspan="3">
@@ -306,24 +290,20 @@
 										</tr>
 										<!-- Exchange rate and base currency VAT -->
 										<tr t-if="o.currency_id != o.company_currency_id" t-foreach="o.amount_by_group" t-as="amount_by_group" style="solid; border-left-width: 1px; border-left-style: solid; border-right-width: 1px; border-right-style: solid;">
-											<t t-if="len(o.line_ids.filtered(lambda line: line.tax_line_id)) == 1 and o.amount_untaxed == amount_by_group[2]">
-											</t>
-											<t t-else="">
-												<td style="border-left-width: 1px; border-left-style: solid;">
-													<p t-esc="amount_by_group[2]" t-options='{"widget": "monetary", "display_currency": o.company_currency_id}' />
-												</td>
-												<td>
-													<p t-esc="amount_by_group[8]" />
-												</td>
-												<td>
-													<p t-esc="(amount_by_group[1] * o.currency_rate)" t-options='{"widget": "monetary", "display_currency": o.company_currency_id}' />
-												</td>
-												<td style="border-right-width: 1px; border-right-style: solid; padding-right: 2px;">
-													<p t-esc="(amount_by_group[1] * o.currency_rate + amount_by_group[2])" t-options='{"widget": "monetary", "display_currency": o.company_currency_id}' />
-												</td>
-											</t>
+                                            <td style="border-left-width: 1px; border-left-style: solid;">
+												<p t-esc="amount_by_group[2] * o.currency_rate" t-options='{"widget": "monetary", "display_currency": o.company_currency_id}' />
+											</td>
+											<td>
+												<p t-esc="amount_by_group[8]" />
+											</td>
+											<td>
+												<p t-esc="amount_by_group[1] * o.currency_rate" t-options='{"widget": "monetary", "display_currency": o.company_currency_id}' />
+											</td>
+											<td style="border-right-width: 1px; border-right-style: solid; padding-right: 2px;">
+												<p t-esc="(amount_by_group[2] + amount_by_group[1]) * o.currency_rate" t-options='{"widget": "monetary", "display_currency": o.company_currency_id}' />
+											</td>
 										</tr>
-										<tr t-if="o.currency_id != o.company_currency_id" style="border-left-width: 1px; border-left-style: solid; border-right-width: 1px; border-right-style: solid;">
+										<tr t-if="o.currency_id != o.currency_rate" style="border-left-width: 1px; border-left-style: solid; border-right-width: 1px; border-right-style: solid;">
 											<td>
 												<h1><strong>ÁRFOLYAM</strong></h1>
 												<h2><strong>(Exchange rate)</strong></h2>
@@ -355,8 +335,8 @@
 						<div class="row">
 							<div class="col-12">
 								<p>
-									A számla és a számlát előállító program megfelel a 23/2014. (VI.30.) NGM rendelet előírásainak.<br />
-									Ez a számla az eYssen IT Services Odoo rendszerével készült. <a href="http://eyssen.hu">http://eyssen.hu</a>
+									A számla és a számlát előállító program megfelel a 23/2014. (VI.30.) NGM rendelet előírásainak.<br />
+									Ez a számla az eYssen IT Services Odoo rendszerével készült. <a href="http://eyssen.hu">http://eyssen.hu</a>
 								</p>
 							</div>
 						</div>
