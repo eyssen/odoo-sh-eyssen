@@ -194,9 +194,6 @@ class AccountMove(models.Model):
                 amounts['percent']
             ) for group, amounts in res]
 
-            
-
-
 
     @api.onchange('currency_id')
     def _onchange_currency(self):
@@ -206,3 +203,15 @@ class AccountMove(models.Model):
         ], limit=1)
         if Bank:
             self.invoice_partner_bank_id = Bank.id
+        super()._onchange_currency()
+
+
+    @api.returns('self', lambda value: value.id)
+    def copy(self, default=None):
+        rec = super().copy(default)
+        # invoice_date is not copied but is the basis for currency rates and payment terms
+        if rec.invoice_date != self.invoice_date:
+            rec.with_context(check_move_validity=False)._onchange_invoice_date()
+            rec._check_balanced()
+        rec._recompute_dynamic_lines(recompute_tax_base_amount=True)
+        return rec

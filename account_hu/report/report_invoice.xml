@@ -180,7 +180,7 @@
 								</tr>
 							</thead>
 							<tbody class="invoice-items-tbody">
-								<tr t-foreach="o.invoice_line_ids" t-as="l">
+								<tr t-foreach="o.invoice_line_ids.sorted(key=lambda l: l.sequence)" t-as="l">
 									<t t-if="l.display_type">
 										<t t-if="l.display_type == 'line_section'">
 											<td colspan="8" class="invoice-items-section">
