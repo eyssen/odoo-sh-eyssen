@@ -101,7 +101,7 @@ PRIVATE_PERSON: Nem ÁFA alany (belföldi vagy külföldi) természetes személy
 								<invoiceCategory>NORMAL</invoiceCategory>
 								<invoiceDeliveryDate t-esc="invoice.fulfillment_date"/>
 								<currencyCode t-esc="invoice.currency_id.name"/>
-								<exchangeRate t-esc="invoice.currency_rate"/>
+								<exchangeRate t-esc="round(invoice.currency_rate, 2)"/>
 								<paymentDate t-esc="invoice.invoice_date_due"/>
 								<invoiceAppearance>PAPER</invoiceAppearance>
 							</invoiceDetail>
